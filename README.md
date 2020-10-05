@@ -50,41 +50,13 @@ This is a command-line application that creates a content management system for 
 * https://nodejs.org/en/
 * https://www.npmjs.com/package/inquirer
 * https://dev.mysql.com/
+* https://www.npmjs.com/package/console.table
 
 
 - - -
 © 2019 Trilogy Education Services, a 2U, Inc. brand. All Rights Reserved.
 
-
-# Unit 12 MySQL Homework: Employee Tracker
-
-Developers are often tasked with creating interfaces that make it easy for non-developers to view and interact with information stored in databases. Often these interfaces are known as **C**ontent **M**anagement **S**ystems. In this homework assignment, your challenge is to architect and build a solution for managing a company's employees using node, inquirer, and MySQL.
-
 ## Instructions
-
-Design the following database schema containing three tables:
-
-![Database Schema](Assets/schema.png)
-
-* **department**:
-
-  * **id** - INT PRIMARY KEY
-  * **name** - VARCHAR(30) to hold department name
-
-* **role**:
-
-  * **id** - INT PRIMARY KEY
-  * **title** -  VARCHAR(30) to hold role title
-  * **salary** -  DECIMAL to hold role salary
-  * **department_id** -  INT to hold reference to department role belongs to
-
-* **employee**:
-
-  * **id** - INT PRIMARY KEY
-  * **first_name** - VARCHAR(30) to hold employee first name
-  * **last_name** - VARCHAR(30) to hold employee last name
-  * **role_id** - INT to hold reference to role employee has
-  * **manager_id** - INT to hold reference to another employee that manages the employee being Created. This field may be null if the employee has no manager
   
 Build a command-line application that at a minimum allows the user to:
 
@@ -125,23 +97,7 @@ How do you deliver this? Here are some guidelines:
 
 * Focus on getting the basic functionality completed before working on more advanced features.
 
-* Review the week's activities for a refresher on MySQL.
-
 * Check out [SQL Bolt](https://sqlbolt.com/) for some extra MySQL help.
-
-## Minimum Requirements
-
-* Functional application.
-
-* GitHub repository with a unique name and a README describing the project.
-
-* The command-line application should allow users to:
-
-  * Add departments, roles, employees
-
-  * View departments, roles, employees
-
-  * Update employee roles
 
 ## Bonus
 
