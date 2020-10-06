@@ -11,6 +11,7 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
+  addEmployee();
   viewAllEmployeesByDepartment();
 });
 
@@ -19,8 +20,10 @@ TODO: viewAllEmployees = () => {
   const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary
     FROM employee
     INNER JOIN role ON employee.role_id = role.role_id
-    INNER JOIN department ON role.department_id = department.department_id;`;
+    INNER JOIN department ON role.department_id = department.department_id
+    ORDER BY employee.id`;
   connection.query(sql, (err, res) => {
+    if(err) throw err;
     console.table(res);
     connection.end();
   });
@@ -31,8 +34,9 @@ viewAllEmployeesByDepartment = () => {
   FROM employee
   INNER JOIN role ON employee.role_id = role.role_id
   INNER JOIN department ON role.department_id = department.department_id
-  ORDER BY department.department_name;`;
+  ORDER BY department.department_name`;
   connection.query(sql, (err, res) => {
+    if(err) throw err;
     console.table(res);
     connection.end();
   });
@@ -42,15 +46,16 @@ TODO: // Add functionality
 viewAllEmployeesByManager = () => {
     const sql = ``;
   connection.query(sql, (err, res) => {
+    if(err) throw err;
     console.table(res);
     connection.end();
   });
 };
 
 addEmployee = () => {
-    const sql = ``;
+    const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) 
+    VALUES ("Toby", "Flenderson", 5, 1)`;
   connection.query(sql, (err, res) => {
-    console.table(res);
-    connection.end();
+    if(err) throw err;
   });
 }
