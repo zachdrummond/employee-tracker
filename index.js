@@ -66,3 +66,23 @@ removeEmployee = () => {
     if(err) throw err;
   });
 }
+
+updateEmployeeRole = () => {
+
+}
+
+updateEmployeeManager = () => {
+
+}
+
+viewAllRoles = () => {
+
+}
+
+addRole = () => {
+
+}
+
+removeRole = () => {
+    
+}
