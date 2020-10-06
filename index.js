@@ -96,7 +96,8 @@ viewAllDepartments = () => {
 };
 
 addDepartment = () => {
-  const sql = ``;
+  const sql = `INSERT INTO department (department_id, department_name) 
+  VALUES (7, "Informational Technology")`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
   });
