@@ -57,7 +57,12 @@ viewAllEmployeesByDepartment = () => {
 
 // Add functionality
 TODO: viewAllEmployeesByManager = () => {
-  const sql = ``;
+  const sql = `SELECT concat(manager.first_name , " " , manager.last_name) AS "manager", employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary
+  FROM employee
+  LEFT JOIN employee AS manager ON employee.manager_id = manager.id
+  INNER JOIN role ON employee.role_id = role.role_id
+  INNER JOIN department ON role.department_id = department.department_id
+  ORDER BY manager;`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
