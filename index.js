@@ -25,3 +25,13 @@ TODO: viewAllEmployees = () => {
     connection.end();
   });
 };
+
+viewAllEmployeesByDepartment = () => {
+  const sql = ``;
+  connection.query(sql, (err, res) => {
+    console.table(res);
+    connection.end();
+  });
+};
+
+viewAllEmployeesByManager = () => {};
