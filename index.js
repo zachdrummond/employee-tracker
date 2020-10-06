@@ -12,27 +12,30 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
   if (err) throw err;
   //addEmployee();
-  //viewAllEmployees();
+  viewAllEmployees();
   //removeEmployee();
   //viewAllRoles();
   //updateEmployeeRole();
   //viewAllEmployees();
-  viewAllDepartments();
-  addDepartment();
-  viewAllDepartments();
-  removeDepartment();
-  viewAllDepartments();
+  //viewAllDepartments();
   //addDepartment();
   //viewAllDepartments();
+  //removeDepartment();
+  //viewAllDepartments();
+  //viewAllRoles();
+  // addRole();
+  // viewAllRoles();
+  // removeRole();
+  // viewAllRoles();
 });
 
-// Add Manager
-TODO: viewAllEmployees = () => {
-  const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary
-    FROM employee
-    INNER JOIN role ON employee.role_id = role.role_id
-    INNER JOIN department ON role.department_id = department.department_id
-    ORDER BY employee.id`;
+viewAllEmployees = () => {
+  const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary, concat(manager.first_name , " " , manager.last_name) AS "manager"
+  FROM employee
+  LEFT JOIN employee AS manager ON employee.manager_id = manager.id
+  INNER JOIN role ON employee.role_id = role.role_id
+  INNER JOIN department ON role.department_id = department.department_id
+  ORDER BY employee.id`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -40,8 +43,9 @@ TODO: viewAllEmployees = () => {
 };
 
 viewAllEmployeesByDepartment = () => {
-  const sql = `SELECT department.department_name, employee.id, employee.first_name, employee.last_name, role.title, role.salary
+  const sql = `SELECT department.department_name, employee.id, employee.first_name, employee.last_name, role.title, role.salary, concat(manager.first_name , " " , manager.last_name) AS "manager"
   FROM employee
+  LEFT JOIN employee AS manager ON employee.manager_id = manager.id
   INNER JOIN role ON employee.role_id = role.role_id
   INNER JOIN department ON role.department_id = department.department_id
   ORDER BY department.department_name`;
@@ -95,18 +99,17 @@ viewAllRoles = () => {
 };
 
 addRole = () => {
-  const sql = ``;
+  const sql = `INSERT INTO role (title, salary, department_id)
+  VALUES ("Web Developer", 75000, 7);`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
-    console.table(res);
   });
 };
 
 removeRole = () => {
-  const sql = ``;
+  const sql = `DELETE FROM role WHERE role.title = "Web Developer"`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
-    console.table(res);
   });
 };
 
