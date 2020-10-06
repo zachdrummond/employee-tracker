@@ -25,7 +25,7 @@ TODO: viewAllEmployees = () => {
     INNER JOIN department ON role.department_id = department.department_id
     ORDER BY employee.id`;
   connection.query(sql, (err, res) => {
-    if(err) throw err;
+    if (err) throw err;
     console.table(res);
   });
 };
@@ -37,52 +37,59 @@ viewAllEmployeesByDepartment = () => {
   INNER JOIN department ON role.department_id = department.department_id
   ORDER BY department.department_name`;
   connection.query(sql, (err, res) => {
-    if(err) throw err;
+    if (err) throw err;
     console.table(res);
   });
 };
 
-TODO: // Add functionality
-viewAllEmployeesByManager = () => {
-    const sql = ``;
+// Add functionality
+TODO: viewAllEmployeesByManager = () => {
+  const sql = ``;
   connection.query(sql, (err, res) => {
-    if(err) throw err;
+    if (err) throw err;
     console.table(res);
     connection.end();
   });
 };
 
 addEmployee = () => {
-    const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) 
+  const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) 
     VALUES ("Toby", "Flenderson", 5, 1)`;
   connection.query(sql, (err, res) => {
-    if(err) throw err;
+    if (err) throw err;
   });
-}
+};
 
 removeEmployee = () => {
-    const sql = `DELETE FROM employee WHERE employee.first_name = "Toby" AND employee.last_name = "Flenderson"`;
+  const sql = `DELETE FROM employee WHERE employee.first_name = "Toby" AND employee.last_name = "Flenderson"`;
   connection.query(sql, (err, res) => {
-    if(err) throw err;
+    if (err) throw err;
   });
-}
+};
 
 updateEmployeeRole = () => {
+  const sql = `UPDATE employee SET role_id = 5 WHERE employee.first_name = "Darryl" AND employee.last_name = "Philbin"`;
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
+  });
+};
 
-}
-
-updateEmployeeManager = () => {
-
-}
+// Add functionality
+TODO: updateEmployeeManager = () => {};
 
 viewAllRoles = () => {
+  const sql = ``;
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
+  });
+};
 
-}
+addRole = () => {};
 
-addRole = () => {
+removeRole = () => {};
 
-}
+viewAllDepartments = () => {};
 
-removeRole = () => {
-    
-}
+addDepartment = () => {};
+
+removeDepartment = () => {};
