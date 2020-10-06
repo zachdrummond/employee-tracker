@@ -89,12 +89,17 @@ addRole = () => {};
 removeRole = () => {};
 
 viewAllDepartments = () => {
-  const sql = `SELECT department.department_name FROM department;`;
+  const sql = `SELECT department.department_name FROM department`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
   });
 };
 
-addDepartment = () => {};
+addDepartment = () => {
+  const sql = ``;
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
+  });
+};
 
 removeDepartment = () => {};
