@@ -115,7 +115,7 @@ addDepartment = () => {
 };
 
 removeDepartment = () => {
-  const sql = ``;
+  const sql = `DELETE FROM department WHERE department_name = "Informational Technology"`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
   });
