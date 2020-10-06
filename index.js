@@ -11,8 +11,14 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
+
+  init();
+
   //addEmployee();
-  viewAllEmployees();
+  //viewAllEmployees();
+  //updateEmployeeManager();
+  //viewAllEmployees();
+  //viewAllEmployeesByManager();
   //removeEmployee();
   //viewAllRoles();
   //updateEmployeeRole();
@@ -28,6 +34,37 @@ connection.connect((err) => {
   // removeRole();
   // viewAllRoles();
 });
+
+init = () => {
+  inquirer
+    .prompt([
+      {
+        name: "userChoice",
+        type: "list",
+        message: "What would you like to do?",
+        choices: [
+          "View All Employees",
+          "View All Employees By Department",
+          "View All Employees By Manager",
+          "Add Employee",
+          "Remove Employee",
+          "Update Employee Role",
+          "Update Employee Manager",
+          "View All Roles",
+          "Add Role",
+          "Remove Role",
+          "View All Departments",
+          "Add Department",
+          "Remove Department",
+        ],
+        default: "View All Employees",
+      },
+    ])
+    .then((response) => {
+      const { userChoice } = response;
+      
+    });
+};
 
 viewAllEmployees = () => {
   const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary, concat(manager.first_name , " " , manager.last_name) AS "manager"
@@ -55,14 +92,13 @@ viewAllEmployeesByDepartment = () => {
   });
 };
 
-// Add functionality
-TODO: viewAllEmployeesByManager = () => {
+viewAllEmployeesByManager = () => {
   const sql = `SELECT concat(manager.first_name , " " , manager.last_name) AS "manager", employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary
   FROM employee
   LEFT JOIN employee AS manager ON employee.manager_id = manager.id
   INNER JOIN role ON employee.role_id = role.role_id
   INNER JOIN department ON role.department_id = department.department_id
-  ORDER BY manager;`;
+  ORDER BY manager`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -92,8 +128,12 @@ updateEmployeeRole = () => {
   });
 };
 
-// Add functionality
-TODO: updateEmployeeManager = () => {};
+updateEmployeeManager = () => {
+  const sql = `UPDATE employee SET manager_id = 2 WHERE employee.first_name = "Darryl" AND employee.last_name = "Philbin"`;
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
+  });
+};
 
 viewAllRoles = () => {
   const sql = `SELECT role.title, role.salary FROM role`;
