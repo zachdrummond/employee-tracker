@@ -78,7 +78,7 @@ updateEmployeeRole = () => {
 TODO: updateEmployeeManager = () => {};
 
 viewAllRoles = () => {
-  const sql = `SELECT role.title FROM role;`;
+  const sql = `SELECT role.title FROM role`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
   });
@@ -88,7 +88,12 @@ addRole = () => {};
 
 removeRole = () => {};
 
-viewAllDepartments = () => {};
+viewAllDepartments = () => {
+  const sql = ``;
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
+  });
+};
 
 addDepartment = () => {};
 
