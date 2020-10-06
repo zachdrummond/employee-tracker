@@ -11,10 +11,19 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
-  addEmployee();
-  viewAllEmployees();
-  removeEmployee();
-  viewAllEmployees();
+  //addEmployee();
+  //viewAllEmployees();
+  //removeEmployee();
+  //viewAllRoles();
+  //updateEmployeeRole();
+  //viewAllEmployees();
+  viewAllDepartments();
+  addDepartment();
+  viewAllDepartments();
+  removeDepartment();
+  viewAllDepartments();
+  //addDepartment();
+  //viewAllDepartments();
 });
 
 // Add Manager
@@ -81,6 +90,7 @@ viewAllRoles = () => {
   const sql = `SELECT role.title FROM role`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
+    console.table(res);
   });
 };
 
@@ -92,6 +102,7 @@ viewAllDepartments = () => {
   const sql = `SELECT department.department_name FROM department`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
+    console.table(res);
   });
 };
 
@@ -103,4 +114,9 @@ addDepartment = () => {
   });
 };
 
-removeDepartment = () => {};
+removeDepartment = () => {
+  const sql = ``;
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
+  });
+};
