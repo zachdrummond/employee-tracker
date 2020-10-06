@@ -87,16 +87,28 @@ updateEmployeeRole = () => {
 TODO: updateEmployeeManager = () => {};
 
 viewAllRoles = () => {
-  const sql = `SELECT role.title FROM role`;
+  const sql = `SELECT role.title, role.salary FROM role`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
   });
 };
 
-addRole = () => {};
+addRole = () => {
+  const sql = ``;
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
+    console.table(res);
+  });
+};
 
-removeRole = () => {};
+removeRole = () => {
+  const sql = ``;
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
+    console.table(res);
+  });
+};
 
 viewAllDepartments = () => {
   const sql = `SELECT department.department_name FROM department`;
@@ -115,7 +127,7 @@ addDepartment = () => {
 };
 
 removeDepartment = () => {
-  const sql = `DELETE FROM department WHERE department_name = "Informational Technology"`;
+  const sql = `DELETE FROM department WHERE department_name = "Information Technology"`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
   });
