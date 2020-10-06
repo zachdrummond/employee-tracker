@@ -12,7 +12,9 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
   if (err) throw err;
   addEmployee();
-  viewAllEmployeesByDepartment();
+  viewAllEmployees();
+  removeEmployee();
+  viewAllEmployees();
 });
 
 // Add Manager
@@ -25,7 +27,6 @@ TODO: viewAllEmployees = () => {
   connection.query(sql, (err, res) => {
     if(err) throw err;
     console.table(res);
-    connection.end();
   });
 };
 
@@ -38,7 +39,6 @@ viewAllEmployeesByDepartment = () => {
   connection.query(sql, (err, res) => {
     if(err) throw err;
     console.table(res);
-    connection.end();
   });
 };
 
@@ -55,6 +55,13 @@ viewAllEmployeesByManager = () => {
 addEmployee = () => {
     const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) 
     VALUES ("Toby", "Flenderson", 5, 1)`;
+  connection.query(sql, (err, res) => {
+    if(err) throw err;
+  });
+}
+
+removeEmployee = () => {
+    const sql = ``;
   connection.query(sql, (err, res) => {
     if(err) throw err;
   });
