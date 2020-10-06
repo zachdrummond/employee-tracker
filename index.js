@@ -78,7 +78,7 @@ updateEmployeeRole = () => {
 TODO: updateEmployeeManager = () => {};
 
 viewAllRoles = () => {
-  const sql = ``;
+  const sql = `SELECT role.title FROM role;`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
   });
