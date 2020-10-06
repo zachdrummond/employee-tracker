@@ -61,7 +61,7 @@ addEmployee = () => {
 }
 
 removeEmployee = () => {
-    const sql = ``;
+    const sql = `DELETE FROM employee WHERE employee.first_name = "Toby" AND employee.last_name = "Flenderson"`;
   connection.query(sql, (err, res) => {
     if(err) throw err;
   });
