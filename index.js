@@ -16,7 +16,10 @@ connection.connect((err) => {
 
 // Add Manager
 TODO: viewAllEmployees = () => {
-  const sql = ``;
+  const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary
+    FROM employee
+    INNER JOIN role ON employee.role_id = role.role_id
+    INNER JOIN department ON role.department_id = department.department_id;`;
   connection.query(sql, (err, res) => {
     console.table(res);
     connection.end();
