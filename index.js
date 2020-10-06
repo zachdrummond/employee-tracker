@@ -11,12 +11,12 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) throw err;
-  viewAllEmployees();
+  viewAllEmployeesByDepartment();
 });
 
 // Add Manager
 TODO: viewAllEmployees = () => {
-  const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary
+  const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary
     FROM employee
     INNER JOIN role ON employee.role_id = role.role_id
     INNER JOIN department ON role.department_id = department.department_id;`;
@@ -27,15 +27,30 @@ TODO: viewAllEmployees = () => {
 };
 
 viewAllEmployeesByDepartment = () => {
-  const sql = `SELECT department.name, employee.id, employee.first_name, employee.last_name, role.title, role.salary
+  const sql = `SELECT department.department_name, employee.id, employee.first_name, employee.last_name, role.title, role.salary
   FROM employee
   INNER JOIN role ON employee.role_id = role.role_id
   INNER JOIN department ON role.department_id = department.department_id
-  ORDER BY department.name;`;
+  ORDER BY department.department_name;`;
   connection.query(sql, (err, res) => {
     console.table(res);
     connection.end();
   });
 };
 
-viewAllEmployeesByManager = () => {};
+TODO: // Add functionality
+viewAllEmployeesByManager = () => {
+    const sql = ``;
+  connection.query(sql, (err, res) => {
+    console.table(res);
+    connection.end();
+  });
+};
+
+addEmployee = () => {
+    const sql = ``;
+  connection.query(sql, (err, res) => {
+    console.table(res);
+    connection.end();
+  });
+}
