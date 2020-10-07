@@ -350,6 +350,7 @@ updateEmployeeManager = () => {
   const sql = `UPDATE employee SET manager_id = 2 WHERE employee.first_name = "Darryl" AND employee.last_name = "Philbin"`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
+    init();
   });
 };
 
@@ -363,17 +364,67 @@ viewAllRoles = () => {
 };
 
 addRole = () => {
-  const sql = `INSERT INTO role (title, salary, department_id)
-  VALUES ("Web Developer", 75000, 7)`;
-  connection.query(sql, (err, res) => {
-    if (err) throw err;
-  });
+  connection.query(
+    `SELECT department_id, department.department_name FROM department`,
+    (err, result) => {
+      if (err) throw err;
+
+      const currentDepartmentsArray = result.map((result) => {
+        return result.department_name;
+      });
+
+      inquirer
+        .prompt([
+          {
+            name: "role",
+            type: "input",
+            message: "What is the name of the role you want to add?",
+          },
+          {
+            name: "salary",
+            type: "input",
+            message: "What is the annual salary for this role?",
+          },
+          {
+            name: "department",
+            type: "list",
+            message: "Which department will this role be under?",
+            choices: currentDepartmentsArray,
+          },
+        ])
+        .then((response) => {
+          const salary = parseInt(response.salary);
+          console.log(salary);
+
+          let departmentId;
+          for (let i = 0; i < result.length; i++) {
+            if (response.department === result[i].department_name) {
+              departmentId = result[i].department_id;
+            }
+          }
+
+          connection.query(
+            `INSERT INTO role (title, salary, department_id)
+            VALUES (?, ?, ?)`,
+            [response.role, salary, departmentId],
+            (err, res) => {
+              if (err) throw err;
+              init();
+            }
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  );
 };
 
 removeRole = () => {
   const sql = `DELETE FROM role WHERE role.title = "Web Developer"`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
+    init();
   });
 };
 
@@ -424,5 +475,6 @@ removeDepartment = () => {
   const sql = `DELETE FROM department WHERE department_name = "Information Technology"`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
+    init();
   });
 };
