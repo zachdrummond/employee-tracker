@@ -138,6 +138,24 @@ createTable = (sql) => {
   });
 };
 
+// Creates an array of Current Employees
+createEmployeesArray = (array) => {
+  return array.map((array) => {
+    return `${array.first_name} ${array.last_name}`;
+  });
+}
+
+// Creates an array of Current Roles
+createRolesArray = (array) => {
+  return [
+    ...new Set(
+      array.map((array) => {
+        return array.title;
+      })
+    ),
+  ];
+}
+
 // Adds an Employee to the Database
 addEmployee = () => {
   // Retrieves a Table of Roles and Employees from the Database
@@ -148,17 +166,9 @@ addEmployee = () => {
       if (err) throw err;
 
       // Creates an array of Current Employees
-      const currentEmployeesArray = result.map((result) => {
-        return `${result.first_name} ${result.last_name}`;
-      });
+      const currentEmployeesArray = createEmployeesArray(result);
       // Creates an array of Current Roles
-      const currentRolesArray = [
-        ...new Set(
-          result.map((result) => {
-            return result.title;
-          })
-        ),
-      ];
+      const currentRolesArray = createRolesArray(result);
 
       inquirer
         .prompt([
@@ -236,9 +246,7 @@ removeEmployee = () => {
       if (err) throw err;
 
       // Creates an array of Current Employees
-      const currentEmployeesArray = result.map((result) => {
-        return `${result.first_name} ${result.last_name}`;
-      });
+      const currentEmployeesArray = createEmployeesArray(result);
 
       inquirer
         .prompt([
@@ -282,17 +290,9 @@ updateEmployeeRole = () => {
       if (err) throw err;
 
       // Creates an array of Current Employees
-      const currentEmployeesArray = result.map((result) => {
-        return `${result.first_name} ${result.last_name}`;
-      });
+      const currentEmployeesArray = createEmployeesArray(result);
       // Creates an array of Current Roles
-      const currentRolesArray = [
-        ...new Set(
-          result.map((result) => {
-            return result.title;
-          })
-        ),
-      ];
+      const currentRolesArray = createRolesArray(result);
 
       inquirer
         .prompt([
@@ -342,31 +342,67 @@ updateEmployeeRole = () => {
 
 // Updates an Employee's Manager in the Database
 updateEmployeeManager = () => {
-  inquirer
-    .prompt([
-      {
-        name: "employee",
-        type: "list",
-        message: "Which employee would you like to update?",
-        choices: [],
-      },
-      {
-        name: "manager",
-        type: "list",
-        message: "Which employee will become the selected employee's manager?",
-        choices: [],
-      },
-    ])
-    .then((response) => {})
-    .catch((error) => {
-      console.log(error);
-    });
+  // Retrieves a Table of Employees from the Database
+  connection.query(
+    `SELECT employee.id, employee.first_name, employee.last_name FROM employee`,
+    (err, result) => {
+      if (err) throw err;
+      // Creates an array of Current Employees
+      const currentEmployeesArray = createEmployeesArray(result);
 
-  const sql = `UPDATE employee SET manager_id = 2 WHERE employee.first_name = "Darryl" AND employee.last_name = "Philbin"`;
-  connection.query(sql, (err, res) => {
-    if (err) throw err;
-    init();
-  });
+      inquirer
+        .prompt([
+          {
+            name: "employee",
+            type: "list",
+            message: "Which employee would you like to update?",
+            choices: currentEmployeesArray,
+          },
+          {
+            name: "manager",
+            type: "list",
+            message:
+              "Which employee will become the selected employee's manager?",
+            choices: currentEmployeesArray,
+          },
+        ])
+        .then((response) => {
+          // Splits the Employee Array into First Name and Last Name
+          const employeeArray = response.employee.split(" ");
+          const employeeFirstName = employeeArray[0];
+          const employeeLastName = employeeArray[1];
+
+          // Splits the Manager Array into First Name and Last Name
+          const managerArray = response.manager.split(" ");
+          const managerFirstName = managerArray[0];
+          const managerLastName = managerArray[1];
+
+          // Retrieves the correct roleId and ManagerId from the database
+          let managerId;
+          for (let i = 0; i < result.length; i++) {
+            if (
+              managerFirstName === result[i].first_name &&
+              managerLastName === result[i].last_name
+            ) {
+              managerId = result[i].id;
+            }
+          }
+
+          // Updates an Employee's Manager in the Database
+          connection.query(
+            `UPDATE employee SET manager_id = ? WHERE employee.first_name = ? AND employee.last_name = ?`,
+            [managerId, employeeFirstName, employeeLastName],
+            (err, res) => {
+              if (err) throw err;
+              init();
+            }
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  );
 };
 
 // Adds a Role to the Database
@@ -446,7 +482,7 @@ addDepartment = () => {
     `SELECT department.department_id FROM department`,
     (err, result) => {
       if (err) throw err;
-      
+
       // Creates a new departmentId rather than using one that already exists
       let departmentId = parseInt(result[result.length - 1].department_id);
       departmentId++;
