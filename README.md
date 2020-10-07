@@ -1,7 +1,5 @@
 # employee-tracker
 
-# Team-Generator
-
 ## Table of Contents
 * [Description](#Description)
 * [Links](#Links)
@@ -13,12 +11,11 @@
 This is a command-line application that creates a content management system for all employees within a company. Users can view, add, or update departments, roles, and/or employees. This app enables business owners to easily keep track of their employees in one organized system.
 
 ### *Usage*
-1. Enter "node app.js" in your command line.
-2. Enter your team's information based on the prompts.
-3. Look at the new HTML website that will be created.
+1. Enter "npm start" in your command line.
+2. Follow the command prompts to view and update the employee management system.
 
 ## Links
-* Video Walkthrough: 
+* Video Walkthrough: https://drive.google.com/file/d/1IyMqLJEc22_CtAR3Shwmu4fbF42_pqzw/view
 * GitHub Repository: https://github.com/zachdrummond/employee-tracker
 
 ## Design Elements
