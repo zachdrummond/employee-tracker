@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const cTable = require("console.table");
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -13,26 +14,6 @@ connection.connect((err) => {
   if (err) throw err;
 
   init();
-
-  //addEmployee();
-  //viewAllEmployees();
-  //updateEmployeeManager();
-  //viewAllEmployees();
-  //viewAllEmployeesByManager();
-  //removeEmployee();
-  //viewAllRoles();
-  //updateEmployeeRole();
-  //viewAllEmployees();
-  //viewAllDepartments();
-  //addDepartment();
-  //viewAllDepartments();
-  //removeDepartment();
-  //viewAllDepartments();
-  //viewAllRoles();
-  // addRole();
-  // viewAllRoles();
-  // removeRole();
-  // viewAllRoles();
 });
 
 init = () => {
@@ -56,14 +37,68 @@ init = () => {
           "View All Departments",
           "Add Department",
           "Remove Department",
+          "Exit"
         ],
         default: "View All Employees",
       },
     ])
     .then((response) => {
-      const { userChoice } = response;
-      
+      filterFunctions(response.userChoice);
+    })
+    .catch((error) => {
+      console.log(error);
     });
+};
+
+filterFunctions = (userChoice) => {
+  switch (userChoice) {
+    case "View All Employees":
+      viewAllEmployees();
+      break;
+    case "View All Employees By Department":
+      viewAllEmployeesByDepartment();
+      break;
+    case "View All Employees By Manager":
+      viewAllEmployeesByManager();
+      break;
+    case "Add Employee":
+      addEmployee();
+      break;
+    case "Remove Employee":
+      removeEmployee();
+      break;
+    case "Update Employee Role":
+      updateEmployeeRole();
+      break;
+    case "Update Employee Manager":
+      updateEmployeeManager();
+      break;
+    case "View All Roles":
+      viewAllRoles();
+      break;
+    case "Add Role":
+      addRole();
+      break;
+    case "Remove Role":
+      removeRole();
+      break;
+    case "View All Departments":
+      viewAllDepartments();
+      break;
+    case "Add Department":
+      addDepartment();
+      break;
+    case "Remove Department":
+      removeDepartment();
+      break;
+    case "Exit":
+    console.log("Goodbye!");  
+    connection.end();
+      break;
+    default:
+      viewAllEmployees();;
+      break;
+  }
 };
 
 viewAllEmployees = () => {
@@ -76,6 +111,7 @@ viewAllEmployees = () => {
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
+    init();
   });
 };
 
@@ -89,6 +125,7 @@ viewAllEmployeesByDepartment = () => {
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
+    init();
   });
 };
 
@@ -102,23 +139,121 @@ viewAllEmployeesByManager = () => {
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
-    connection.end();
+    init();
   });
 };
 
 addEmployee = () => {
-  const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) 
-    VALUES ("Toby", "Flenderson", 5, 1)`;
-  connection.query(sql, (err, res) => {
-    if (err) throw err;
-  });
+  connection.query(
+    `SELECT role.role_id, role.title, employee.id, employee.first_name, employee.last_name FROM role
+    INNER JOIN employee ON employee.role_id = role.role_id;`,
+    (err, result) => {
+      if (err) throw err;
+
+      const currentEmployeesArray = result.map((result) => {
+        return `${result.first_name} ${result.last_name}`;
+      });
+      const currentRolesArray = [
+        ...new Set(
+          result.map((result) => {
+            return result.title;
+          })
+        ),
+      ];
+
+      inquirer
+        .prompt([
+          {
+            name: "employeeFirstName",
+            type: "input",
+            message: "What is the employee's first name?",
+          },
+          {
+            name: "employeeLastName",
+            type: "input",
+            message: "What is the employee's last name?",
+          },
+          {
+            name: "employeeRole",
+            type: "list",
+            message: "What is the employee's role?",
+            choices: currentRolesArray,
+          },
+          {
+            name: "manager",
+            type: "list",
+            message: "Who is the employee's manager?",
+            choices: currentEmployeesArray,
+          },
+        ])
+        .then((response) => {
+          const managerArray = response.manager.split(" ");
+          const managerFirstName = managerArray[0];
+          const managerLastName = managerArray[1];
+
+          let roleId, managerId;
+          for(let i = 0; i < result.length; i++){
+            if(response.employeeRole === result[i].title){
+              roleId = result[i].role_id
+            }
+            if(managerFirstName === result[i].first_name && managerLastName === result[i].last_name){
+              managerId = result[i].id;
+            }
+          }
+
+          connection.query(
+            `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`,
+            [response.employeeFirstName, response.employeeLastName, roleId, managerId],
+            (err, result) => {
+              if (err) throw err;
+              init();
+            }
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  );
 };
 
 removeEmployee = () => {
-  const sql = `DELETE FROM employee WHERE employee.first_name = "Toby" AND employee.last_name = "Flenderson"`;
-  connection.query(sql, (err, res) => {
-    if (err) throw err;
-  });
+  connection.query(
+    `SELECT employee.first_name, employee.last_name FROM employee`,
+    (err, result) => {
+      if (err) throw err;
+      const currentEmployeesArray = result.map((result) => {
+        return `${result.first_name} ${result.last_name}`;
+      });
+
+      inquirer
+        .prompt([
+          {
+            name: "employee",
+            type: "list",
+            message: "Which employee would you like to remove?",
+            choices: currentEmployeesArray,
+          },
+        ])
+        .then((response) => {
+          const responseArray = response.employee.split(" ");
+          const firstName = responseArray[0];
+          const lastName = responseArray[1];
+
+          connection.query(
+            `DELETE FROM employee WHERE employee.first_name = ? AND employee.last_name = ?`,
+            [firstName, lastName],
+            (err, result) => {
+              if (err) throw err;
+              init();
+            }
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  );
 };
 
 updateEmployeeRole = () => {
@@ -129,6 +264,26 @@ updateEmployeeRole = () => {
 };
 
 updateEmployeeManager = () => {
+  inquirer
+    .prompt([
+      {
+        name: "employee",
+        type: "list",
+        message: "Which employee would you like to update?",
+        choices: [],
+      },
+      {
+        name: "manager",
+        type: "list",
+        message: "Which employee will become the selected employee's manager?",
+        choices: [],
+      },
+    ])
+    .then((response) => {})
+    .catch((error) => {
+      console.log(error);
+    });
+
   const sql = `UPDATE employee SET manager_id = 2 WHERE employee.first_name = "Darryl" AND employee.last_name = "Philbin"`;
   connection.query(sql, (err, res) => {
     if (err) throw err;
@@ -140,6 +295,7 @@ viewAllRoles = () => {
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
+    init();
   });
 };
 
@@ -163,6 +319,7 @@ viewAllDepartments = () => {
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
+    init();
   });
 };
 
