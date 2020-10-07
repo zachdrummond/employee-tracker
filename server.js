@@ -1,7 +1,9 @@
+// DEPENDENCIES
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
+// Creates a Connection with the Database
 const connection = mysql.createConnection({
   host: "localhost",
   port: 3306,
@@ -10,14 +12,17 @@ const connection = mysql.createConnection({
   database: "employee_tracker_db",
 });
 
+// Establishes the Connection with the Database
 connection.connect((err) => {
   if (err) throw err;
+
+  console.log("Welcome to the Ultimate Employee Management System!");
 
   init();
 });
 
+// Initial Prompt for User
 init = () => {
-  console.log("Welcome to the Ultimate Employee Management System!");
   inquirer
     .prompt([
       {
@@ -51,16 +56,34 @@ init = () => {
     });
 };
 
+// Swtich...case statements that complete the user's requested task
 filterFunctions = (userChoice) => {
+  let sql = ``;
+
   switch (userChoice) {
     case "View All Employees":
-      viewAllEmployees();
+      sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary, concat(manager.first_name , " " , manager.last_name) AS "manager"
+      FROM employee
+      LEFT JOIN employee AS manager ON employee.manager_id = manager.id
+      INNER JOIN role ON employee.role_id = role.role_id
+      INNER JOIN department ON role.department_id = department.department_id
+      ORDER BY employee.id`;
       break;
     case "View All Employees By Department":
-      viewAllEmployeesByDepartment();
+      sql = `SELECT department.department_name, employee.id, employee.first_name, employee.last_name, role.title, role.salary, concat(manager.first_name , " " , manager.last_name) AS "manager"
+      FROM employee
+      LEFT JOIN employee AS manager ON employee.manager_id = manager.id
+      INNER JOIN role ON employee.role_id = role.role_id
+      INNER JOIN department ON role.department_id = department.department_id
+      ORDER BY department.department_name`;
       break;
     case "View All Employees By Manager":
-      viewAllEmployeesByManager();
+      sql = `SELECT concat(manager.first_name , " " , manager.last_name) AS "manager", employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary
+      FROM employee
+      LEFT JOIN employee AS manager ON employee.manager_id = manager.id
+      INNER JOIN role ON employee.role_id = role.role_id
+      INNER JOIN department ON role.department_id = department.department_id
+      ORDER BY manager`;
       break;
     case "Add Employee":
       addEmployee();
@@ -75,7 +98,7 @@ filterFunctions = (userChoice) => {
       updateEmployeeManager();
       break;
     case "View All Roles":
-      viewAllRoles();
+      sql = `SELECT role.title, role.salary FROM role`;
       break;
     case "Add Role":
       addRole();
@@ -84,7 +107,7 @@ filterFunctions = (userChoice) => {
       removeRole();
       break;
     case "View All Departments":
-      viewAllDepartments();
+      sql = `SELECT department.department_name FROM department`;
       break;
     case "Add Department":
       addDepartment();
@@ -97,18 +120,17 @@ filterFunctions = (userChoice) => {
       connection.end();
       break;
     default:
-      viewAllEmployees();
+      console.log("Goodbye!");
+      connection.end();
       break;
+  }
+  if (sql.length !== 0) {
+    createTable(sql);
   }
 };
 
-viewAllEmployees = () => {
-  const sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary, concat(manager.first_name , " " , manager.last_name) AS "manager"
-  FROM employee
-  LEFT JOIN employee AS manager ON employee.manager_id = manager.id
-  INNER JOIN role ON employee.role_id = role.role_id
-  INNER JOIN department ON role.department_id = department.department_id
-  ORDER BY employee.id`;
+// Displays a Table based on the User's Choice
+createTable = (sql) => {
   connection.query(sql, (err, res) => {
     if (err) throw err;
     console.table(res);
@@ -116,44 +138,20 @@ viewAllEmployees = () => {
   });
 };
 
-viewAllEmployeesByDepartment = () => {
-  const sql = `SELECT department.department_name, employee.id, employee.first_name, employee.last_name, role.title, role.salary, concat(manager.first_name , " " , manager.last_name) AS "manager"
-  FROM employee
-  LEFT JOIN employee AS manager ON employee.manager_id = manager.id
-  INNER JOIN role ON employee.role_id = role.role_id
-  INNER JOIN department ON role.department_id = department.department_id
-  ORDER BY department.department_name`;
-  connection.query(sql, (err, res) => {
-    if (err) throw err;
-    console.table(res);
-    init();
-  });
-};
-
-viewAllEmployeesByManager = () => {
-  const sql = `SELECT concat(manager.first_name , " " , manager.last_name) AS "manager", employee.id, employee.first_name, employee.last_name, role.title, department.department_name, role.salary
-  FROM employee
-  LEFT JOIN employee AS manager ON employee.manager_id = manager.id
-  INNER JOIN role ON employee.role_id = role.role_id
-  INNER JOIN department ON role.department_id = department.department_id
-  ORDER BY manager`;
-  connection.query(sql, (err, res) => {
-    if (err) throw err;
-    console.table(res);
-    init();
-  });
-};
-
+// Adds an Employee to the Database
 addEmployee = () => {
+  // Retrieves a Table of Roles and Employees from the Database
   connection.query(
     `SELECT role.role_id, role.title, employee.id, employee.first_name, employee.last_name FROM role
     INNER JOIN employee ON employee.role_id = role.role_id`,
     (err, result) => {
       if (err) throw err;
 
+      // Creates an array of Current Employees
       const currentEmployeesArray = result.map((result) => {
         return `${result.first_name} ${result.last_name}`;
       });
+      // Creates an array of Current Roles
       const currentRolesArray = [
         ...new Set(
           result.map((result) => {
@@ -188,10 +186,12 @@ addEmployee = () => {
           },
         ])
         .then((response) => {
+          // Splits the Manager Array into First Name and Last Name
           const managerArray = response.manager.split(" ");
           const managerFirstName = managerArray[0];
           const managerLastName = managerArray[1];
 
+          // Retrieves the correct roleId and ManagerId from the database
           let roleId, managerId;
           for (let i = 0; i < result.length; i++) {
             if (response.role === result[i].title) {
@@ -205,6 +205,7 @@ addEmployee = () => {
             }
           }
 
+          // Adds the Employee to the Database
           connection.query(
             `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`,
             [
@@ -226,11 +227,15 @@ addEmployee = () => {
   );
 };
 
+// Removes an Employee from the Database
 removeEmployee = () => {
+  // Retrieves a Table of Employees from the Database
   connection.query(
     `SELECT employee.first_name, employee.last_name FROM employee`,
     (err, result) => {
       if (err) throw err;
+
+      // Creates an array of Current Employees
       const currentEmployeesArray = result.map((result) => {
         return `${result.first_name} ${result.last_name}`;
       });
@@ -245,10 +250,12 @@ removeEmployee = () => {
           },
         ])
         .then((response) => {
+          // Splits the Employee Array into First Name and Last Name
           const employeeArray = response.employee.split(" ");
           const employeeFirstName = employeeArray[0];
           const employeeLastName = employeeArray[1];
 
+          // Removes the Employee from the Database
           connection.query(
             `DELETE FROM employee WHERE employee.first_name = ? AND employee.last_name = ?`,
             [employeeFirstName, employeeLastName],
@@ -265,16 +272,20 @@ removeEmployee = () => {
   );
 };
 
+// Updates an Employee's Role in the Database
 updateEmployeeRole = () => {
+  // Retrieves a Table of Roles and Employees from the Database
   connection.query(
     `SELECT role.role_id, role.title, employee.first_name, employee.last_name FROM role
     INNER JOIN employee ON employee.role_id = role.role_id`,
     (err, result) => {
       if (err) throw err;
 
+      // Creates an array of Current Employees
       const currentEmployeesArray = result.map((result) => {
         return `${result.first_name} ${result.last_name}`;
       });
+      // Creates an array of Current Roles
       const currentRolesArray = [
         ...new Set(
           result.map((result) => {
@@ -299,10 +310,12 @@ updateEmployeeRole = () => {
           },
         ])
         .then((response) => {
+          // Splits the Employee Array into First Name and Last Name
           const employeeArray = response.employee.split(" ");
           const employeeFirstName = employeeArray[0];
           const employeeLastName = employeeArray[1];
 
+          // Retrieves the correct roleId from the database
           let roleId;
           for (let i = 0; i < result.length; i++) {
             if (response.role === result[i].title) {
@@ -310,6 +323,7 @@ updateEmployeeRole = () => {
             }
           }
 
+          // Updates the Employee's Role in the Database
           connection.query(
             `UPDATE employee SET role_id = ? WHERE employee.first_name = ? AND employee.last_name = ?`,
             [roleId, employeeFirstName, employeeLastName],
@@ -326,6 +340,7 @@ updateEmployeeRole = () => {
   );
 };
 
+// Updates an Employee's Manager in the Database
 updateEmployeeManager = () => {
   inquirer
     .prompt([
@@ -354,21 +369,15 @@ updateEmployeeManager = () => {
   });
 };
 
-viewAllRoles = () => {
-  const sql = `SELECT role.title, role.salary FROM role`;
-  connection.query(sql, (err, res) => {
-    if (err) throw err;
-    console.table(res);
-    init();
-  });
-};
-
+// Adds a Role to the Database
 addRole = () => {
+  // Retrieves a Table of Departments from the Database
   connection.query(
     `SELECT department_id, department.department_name FROM department`,
     (err, result) => {
       if (err) throw err;
 
+      // Creates an array of Current Departments
       const currentDepartmentsArray = result.map((result) => {
         return result.department_name;
       });
@@ -394,8 +403,8 @@ addRole = () => {
         ])
         .then((response) => {
           const salary = parseInt(response.salary);
-          console.log(salary);
 
+          // Retrieves the correct departmentId from the database
           let departmentId;
           for (let i = 0; i < result.length; i++) {
             if (response.department === result[i].department_name) {
@@ -403,6 +412,7 @@ addRole = () => {
             }
           }
 
+          // Adds a Role to the Database
           connection.query(
             `INSERT INTO role (title, salary, department_id)
             VALUES (?, ?, ?)`,
@@ -420,6 +430,7 @@ addRole = () => {
   );
 };
 
+// Removes a Role from the Database
 removeRole = () => {
   const sql = `DELETE FROM role WHERE role.title = "Web Developer"`;
   connection.query(sql, (err, res) => {
@@ -428,20 +439,15 @@ removeRole = () => {
   });
 };
 
-viewAllDepartments = () => {
-  const sql = `SELECT department.department_name FROM department`;
-  connection.query(sql, (err, res) => {
-    if (err) throw err;
-    console.table(res);
-    init();
-  });
-};
-
+// Adds a Department to the Database
 addDepartment = () => {
+  // Retrieves a Table of Department iDs from the Database
   connection.query(
     `SELECT department.department_id FROM department`,
     (err, result) => {
       if (err) throw err;
+      
+      // Creates a new departmentId rather than using one that already exists
       let departmentId = parseInt(result[result.length - 1].department_id);
       departmentId++;
 
@@ -454,6 +460,7 @@ addDepartment = () => {
           },
         ])
         .then((response) => {
+          // Adds a Department to the Database
           connection.query(
             `INSERT INTO department (department_id, department_name)
             VALUES (?, ?)`,
@@ -471,6 +478,7 @@ addDepartment = () => {
   );
 };
 
+// Removes a Department from the Database
 removeDepartment = () => {
   const sql = `DELETE FROM department WHERE department_name = "Information Technology"`;
   connection.query(sql, (err, res) => {
