@@ -21,30 +21,31 @@ This is a command-line application that creates a content management system for 
 ## Design Elements
 ### *JavaScript - Node.js*
 * Node Command-Line User Interface
-* Unit Tests
-* Modules
-* Node Packages - File System, Path
-* Node Package Manager - Inquirer, Jest
-* Classes & Sub-Classes
-* Constructors
+* Node Package Manager - Inquirer, MySQL, Console.Table
 * Promises
 * Objects & Destructured Objects
 * Arrays
 * Methods
 * Functions
 * if...else Statements
+* PORT
 * Template Literals
 * Comments
 
+### *MySQL*
+* Database
+* Tables
+* Columns and Rows
+* Joins
+* Constraints
 
 ## App Preview
-### Command-Line Instructions
-![CLI](./Assets/)
-### App Preview
-![App Preview](./Assets/)
+![CLI](./assets/images/employee-tracker.png)
 
 ## Credits
 * https://nodejs.org/en/
 * https://www.npmjs.com/package/inquirer
 * https://dev.mysql.com/
 * https://www.npmjs.com/package/console.table
+* https://www.npmjs.com/package/mysql
+* https://www.mysql.com/
