@@ -23,11 +23,11 @@ This is a command-line application that creates a content management system for 
 * Node Command-Line User Interface
 * Node Package Manager - Inquirer, MySQL, Console.Table
 * Promises
-* Objects & Destructured Objects
+* Objects
 * Arrays
 * Methods
 * Functions
-* if...else Statements
+* Switch...case Statements
 * PORT
 * Template Literals
 * Comments
