@@ -19,25 +19,11 @@ This is a command-line application that creates a content management system for 
 * GitHub Repository: https://github.com/zachdrummond/employee-tracker
 
 ## Design Elements
-### *JavaScript - Node.js*
-* Node Command-Line User Interface
+* JavaScript
+* Node.js
+* Command-Line User Interface
 * Node Package Manager - Inquirer, MySQL, Console.Table
-* Promises
-* Objects
-* Arrays
-* Methods
-* Functions
-* Switch...case Statements
-* PORT
-* Template Literals
-* Comments
-
-### *MySQL*
-* Database
-* Tables
-* Columns and Rows
-* Joins
-* Constraints
+* MySQL
 
 ## App Preview
 ![CLI](./assets/images/employee-tracker.png)
